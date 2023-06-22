@@ -1,14 +1,15 @@
 # Nombre del programa: Mini Proyecto 1
-# Versión: Beta 1.4
+# Versión: Beta 1.1.1
 
 # Librerias utilizada: pip install pandas- pip install openpyxl
 # pip install tabulate
 
 import datetime
 from datetime import datetime, timedelta
-
-import pandas as pd
 from tabulate import tabulate
+import pandas as pd
+
+
 
 ##pip install pandas
 
@@ -18,7 +19,7 @@ paquetes = []
 registros = {}
 suscriptor = 1000
 cancelaciones = {}
-grantotal = {}
+grantotal= {}
 # Añadir un registro al diccionario
 registro1 = {
     'codigo': 1,
@@ -133,7 +134,7 @@ def registro():
                         resp = input("Desea agregar plataformas de streaming  (s para si y n para no): ")
                 elif resp.lower() == 's':
                     paquete_adicional = True
-                    # print(len(adicionales))
+                    #print(len(adicionales))
                     if len(adicionales) == 4:
                         print("No puede ingresar mas plataformas")
                         # print("respuesta2")
@@ -263,9 +264,16 @@ def registroVentas(ultimo_suscriptor=None):
     '''
     { 122323: {}     }
     '''
-    print("1. Registro de paquete")
-    print("2. Regresar")
-    opcion = int(input("Ingrese una opción (1 o 2): "))
+
+    while True:
+        try:
+            print("1. Registro de paquete")
+            print("2. Regresar")
+            opcion = int(input("Ingrese una opción (1 o 2): "))
+            break
+        except ValueError:
+            print("Formato de fecha incorrecto.")
+
     match opcion:
         case 1:
             '''if suscriptor == 1000:
@@ -411,7 +419,7 @@ def registroVentas(ultimo_suscriptor=None):
             # cantidad_paquete_adicional
             print(f"Su código único de suscriptor es {suscriptor}")
             registros[suscriptor] = dicProvisional
-            # print(registros)
+            #print(registros)
             suscriptor = suscriptor + 1
             '''if suscriptor == 1000:
                 print("wakala",suscriptor)
@@ -426,9 +434,8 @@ def registroVentas(ultimo_suscriptor=None):
             elif respuesta4.lower() == 's':
                 registroVentas()
 
-
 def cancelar_servicio():
-    print(registros)
+    '''print(registros)
     suscriptor_usuario = int(input("Ingrese el número de suscriptor: "))
     while True:
         try:
@@ -439,15 +446,15 @@ def cancelar_servicio():
             print("Formato de fecha incorrecto.")
     if suscriptor_usuario in registros:
         fecha_registro = registros[suscriptor_usuario]['dia_instalacion']
-        print("FC", fecha_cancelacion)
+        print("FC",fecha_cancelacion)
         if fecha_cancelacion >= fecha_registro:
             registros[suscriptor_usuario]['fechaCancelacion'] = fecha_cancelacion
             print(f"El servicio del suscriptor {suscriptor_usuario} ha sido cancelado correctamente.")
             dias_cancelacion = (fecha_cancelacion - fecha_registro).days
             print(f"Los dias que mantuvo el servicio: {dias_cancelacion}")
-
+            print('wiwi',dias_cancelacion)
             # puede ser movido ser movido 452 en caso de necesitar mas datos.
-            # Lo movi a la 447
+            #Lo movi a la 447
 
             if dias_cancelacion <= 15:
                 print(
@@ -456,7 +463,7 @@ def cancelar_servicio():
                 # Sumar la cantidad de días
                 fecha_nueva = fecha_cancelacion + timedelta(days=dias_cancelacion)
                 # Calcular la diferencia en meses
-                meses = (fecha_nueva.year - fecha_cancelacion.year) * 12 + fecha_nueva.month - fecha_cancelacion.month
+                meses = (fecha_nueva.year - fecha_cancelacion.year) * 12 + fecha_nueva.days - fecha_cancelacion.days
                 print("Aproximadamente", meses, "meses")
 
                 # ESTA OPERACION ES CORRECTA?
@@ -477,7 +484,51 @@ def cancelar_servicio():
 
     # if dias_cancelacion
 
+'''
 
+
+def cancelar_servicio():
+    print(registros)
+    suscriptor_usuario = int(input("Ingrese el número de suscriptor: "))
+    while True:
+        try:
+            fecha_str = input("Ingrese la fecha de cancelación en el formato dd/mm/aaaa: ")
+            fecha_cancelacion = datetime.strptime(fecha_str, "%d/%m/%Y")
+            break
+        except ValueError:
+            print("Formato de fecha incorrecto.")
+
+    if suscriptor_usuario in registros:
+        fecha_registro = registros[suscriptor_usuario]['dia_instalacion']
+        print("FC", fecha_cancelacion)
+
+        if fecha_cancelacion >= fecha_registro:
+            registros[suscriptor_usuario]['fechaCancelacion'] = fecha_cancelacion
+            print(f"El servicio del suscriptor {suscriptor_usuario} ha sido cancelado correctamente.")
+            dias_cancelacion = (fecha_cancelacion - fecha_registro).days
+            print(f"Los días que mantuvo el servicio: {dias_cancelacion}")
+
+            if dias_cancelacion <= 15:
+                print(
+                    f"La cantidad de días que tuvo el servicio fue {dias_cancelacion} días. No se le cobrará cargo adicional.")
+            elif dias_cancelacion > 15:
+                fecha_nueva = fecha_cancelacion + timedelta(days=dias_cancelacion)
+                meses = (fecha_nueva.year - fecha_cancelacion.year) * 12 + fecha_nueva.month - fecha_cancelacion.month
+                print("Aproximadamente", meses, "meses")
+
+                cantidadImpuesto = ((18 - meses) * registros[suscriptor_usuario]['preciopago']) * 0.25
+                print(f"Cargo adicional de {cantidadImpuesto}")
+                cantidad_p = ((18 - meses) * registros[suscriptor_usuario]['preciopago']) + cantidadImpuesto
+                print(f"Total a pagar {cantidad_p}")
+
+                print(f"Tiene que pagar un total de {cantidad_p} como impuesto de cancelación.")
+
+            cancelaciones[suscriptor_usuario] = registros[suscriptor_usuario]
+            del registros[suscriptor_usuario]
+        else:
+            print("La fecha de cancelación debe ser posterior a la fecha de registro.")
+    else:
+        print("El número de suscriptor no se encuentra registrado.")
 def listadoPaquetes():
     print("Listado Paquetes")
 
@@ -502,6 +553,7 @@ def listadoPaquetes():
 
 
 def listaCancelaciones():
+
     print("Lista de cancelaciones realizadas")
     expulsion = [{'suscriptor': key, **value} for key, value in cancelaciones.items()]
     dataframe = pd.DataFrame(expulsion)
@@ -516,15 +568,17 @@ def ventas():
         acumTotal = acumTotal + value.get('preciopago')
     grantotal['cantidadventas'] = cantVent
     grantotal['totalventas'] = acumTotal
-    # print(grantotal)
+    #print(grantotal)
     dataframe = pd.DataFrame([grantotal])
     dataframe.to_excel('grantotal.xlsx', index=False)
-    # print("acumTotal",acumTotal)
-    # print("cantVent",cantVent)
+    #print("acumTotal",acumTotal)
+    #print("cantVent",cantVent)
+
+
+
 
 
 while True:
-    opcion=0
     print("Bienvenido al mini proyecto 1".center(70, '-'))
     # print("\n")
     print(centro.center(70, '*'))
@@ -561,7 +615,7 @@ while True:
         case 6:
             ventas()
         case 7:
-            # print("Gracias por utilizar las opciones, cerro:",datetime.datetime.now())
+            #print("Gracias por utilizar las opciones, cerro:",datetime.datetime.now())
             break
         case _:
             print("Opción inválida")
