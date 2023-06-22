@@ -1,4 +1,4 @@
-# Nombre del programa: Mini Proyecto 1
+# Nombre del programa: Mini Proyecto 1..
 # Versión: Beta 1.1.1
 
 # Librerias utilizada: pip install pandas- pip install openpyxl
